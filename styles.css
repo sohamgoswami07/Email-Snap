@@ -1,0 +1,16 @@
+.gmail-export-btn:hover {
+    height: 25px;
+    width: 25px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 50%;
+}
+  
+.gmail-export-btn svg {
+    fill: #767676;
+    stroke: #767676;
+}
+  
+.gmail-export-btn:hover svg {
+    fill: #202124;
+    stroke: #202124;
+}

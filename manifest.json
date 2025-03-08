@@ -1,0 +1,31 @@
+{
+    "manifest_version": 3,
+    "name": "Gmail HTML Template Exporter",
+    "version": "1.0",
+    "description": "Save Gmail emails as HTML templates with one click",
+    "permissions": [
+      "activeTab",
+      "downloads"
+    ],
+    "host_permissions": [
+      "https://mail.google.com/*"
+    ],
+    "action": {
+      "default_popup": "popup.html",
+      "default_icon": {
+        "16": "images/icon16.png",
+        "48": "images/icon48.png",
+        "128": "images/icon128.png"
+      }
+    },
+    "content_scripts": [
+      {
+        "matches": ["https://mail.google.com/*"],
+        "js": ["content.js"],
+        "css": ["styles.css"]
+      }
+    ],
+    "background": {
+      "service_worker": "background.js"
+    }
+  }
