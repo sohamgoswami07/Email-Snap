@@ -1,9 +1,9 @@
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === 'download') {
-      chrome.downloads.download({
-        url: request.url,
-        filename: request.filename,
-        saveAs: false
-      });
-    }
-  });
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === 'download') {
+    chrome.downloads.download({
+      url: message.url,
+      filename: message.filename,
+      saveAs: true
+    });
+  }
+});

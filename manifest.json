@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Gmail HTML Template Exporter",
-    "version": "1.0",
+    "version": "1.0.1",
     "description": "Save Gmail emails as HTML templates with one click",
     "permissions": [
       "activeTab",
@@ -21,8 +21,17 @@
     "content_scripts": [
       {
         "matches": ["https://mail.google.com/*"],
-        "js": ["content.js"],
+        "js": [
+          "content.js",
+          "html2canvas.min.js"
+        ],
         "css": ["styles.css"]
+      }
+    ],
+    "web_accessible_resources": [
+      {
+        "resources": ["html2canvas.min.js"],
+        "matches": ["<all_urls>"]
       }
     ],
     "background": {

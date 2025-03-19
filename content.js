@@ -1,55 +1,41 @@
 (function main() {
-  // Configuration constants
   const SELECTORS = {
     EMAIL_CONTENT: '.a3s.aiL',
     EMAIL_SUBJECT: '.hP',
-    EMAIL_OPEN_INDICATOR: '.h7', // Email thread indicator present when email is open
-    GMAIL_RIGHT_SIDEBAR: '.brC-brG' // Right sidebar in Gmail
+    EMAIL_OPEN_INDICATOR: '.h7',
+    GMAIL_RIGHT_SIDEBAR: '.brC-brG'
   };
-  
+
   const BUTTON_ID = 'gmail-export-floating-btn';
-  
-  // Store state for tracking
+  const MENU_ID = 'gmail-export-format-menu';
   let isButtonVisible = false;
-  
-  // Initialize
+  let isMenuOpen = false;
+
   init();
 
-  // Sets up all event listeners and initial state
   function init() {
-    // Create the floating button element once
     createFloatingButton();
-    
-    // Set up DOM observer
+    createFormatMenu();
     setupDomObserver();
-    
-    // Initial check
     setTimeout(checkEmailView, 1000);
-    
-    // Regular check for email view (Gmail's dynamic loading)
     setInterval(checkEmailView, 1000);
-    
-    // Style fix for Gmail's z-index stacking
     fixGmailZIndexing();
+    document.addEventListener('click', handleOutsideClick);
   }
 
-  // Creates the floating button element and adds it to the DOM
   function createFloatingButton() {
-    // Check if button already exists
     if (document.getElementById(BUTTON_ID)) return;
-    
     const button = document.createElement('div');
     button.id = BUTTON_ID;
-    
-    // Style the button
+
     Object.assign(button.style, {
       position: 'fixed',
-      bottom: '20px',
-      right: '20px',
+      bottom: '50px',
+      right: '0px',
       width: '50px',
       height: '50px',
       borderRadius: '50%',
-      backgroundColor: '#1a73e8', // Gmail blue
+      backgroundColor: '#000000',
       boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
       display: 'flex',
       alignItems: 'center',
@@ -57,12 +43,10 @@
       cursor: 'pointer',
       zIndex: '9999',
       transition: 'transform 0.2s, opacity 0.3s',
-      opacity: '0', // Start hidden
-      transform: 'scale(0.8)',
+      opacity: '0',
       color: 'white'
     });
-    
-    // Add export icon
+
     button.innerHTML = `
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
            fill="none" stroke="currentColor" stroke-width="2" 
@@ -72,15 +56,18 @@
         <line x1="12" y1="15" x2="12" y2="3"></line>
       </svg>
     `;
-    
-    // Add tooltip
+
     const tooltip = document.createElement('div');
     Object.assign(tooltip.style, {
       position: 'absolute',
-      top: '-40px',
+      top: '-30px',
       left: '50%',
       transform: 'translateX(-50%)',
+      zIndex: '99',
       backgroundColor: 'rgba(0,0,0,0.8)',
+      backdropFilter: 'blur(5px)',
+      webkitBackdropFilter: 'blur(5px)',
+      boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
       color: 'white',
       padding: '5px 10px',
       borderRadius: '4px',
@@ -90,70 +77,130 @@
       pointerEvents: 'none',
       whiteSpace: 'nowrap'
     });
-    tooltip.textContent = 'Save as HTML template';
+    tooltip.textContent = 'Save email';
     button.appendChild(tooltip);
-    
-    // Add hover effects
+
     button.addEventListener('mouseover', () => {
-      button.style.transform = 'scale(1.1)';
       tooltip.style.opacity = '1';
     });
-    
+
     button.addEventListener('mouseout', () => {
-      button.style.transform = 'scale(1)';
       tooltip.style.opacity = '0';
     });
-    
-    // Add click handler
-    button.addEventListener('click', handleExportClick);
-    
-    // Add to document
+
+    button.addEventListener('click', toggleFormatMenu);
     document.body.appendChild(button);
   }
-  
-  // Fix Gmail's z-index stacking to ensure our button is always visible
+
+  function createFormatMenu() {
+    if (document.getElementById(MENU_ID)) return;
+    const menu = document.createElement('div');
+    menu.id = MENU_ID;
+
+    Object.assign(menu.style, {
+      position: 'fixed',
+      bottom: '110px',
+      right: '0px',
+      width: '180px',
+      background: 'rgba(255, 255, 255, 0.5)',
+      backdropFilter: 'blur(5px)',
+      webkitBackdropFilter: 'blur(5px)',
+      border: '1px solid rgba(255, 255, 255, 0.18)',
+      boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+      borderRadius: '8px',
+      overflow: 'hidden',
+      zIndex: '999',
+      transition: 'transform 0.2s, opacity 0.3s',
+      opacity: '0',
+      transform: 'scale(0.9) translateY(10px)',
+      pointerEvents: 'none'
+    });
+
+    const formats = [
+      { id: 'html', label: 'Save as HTML' },
+      { id: 'png', label: 'Save as PNG' },
+      { id: 'jpg', label: 'Save as JPG' }
+    ];
+
+    formats.forEach(format => {
+      const option = document.createElement('div');
+      Object.assign(option.style, {
+        padding: '10px 16px',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        transition: 'background-color 0.2s'
+      });
+
+      option.innerHTML = `
+        <span style="font-size: 14px;">${format.label}</span>
+      `;
+
+      option.addEventListener('mouseover', () => {
+        option.style.backgroundColor = '#f1f3f4';
+      });
+      option.addEventListener('mouseout', () => {
+        option.style.backgroundColor = 'transparent';
+      });
+
+      option.addEventListener('click', (e) => {
+        e.stopPropagation();
+        handleExportClick(format.id);
+        toggleFormatMenu();
+      });
+
+      menu.appendChild(option);
+    });
+
+    document.body.appendChild(menu);
+  }
+
+  function toggleFormatMenu(e) {
+    if (e) e.stopPropagation();
+    const menu = document.getElementById(MENU_ID);
+    if (!menu) return;
+    isMenuOpen = !isMenuOpen;
+
+    if (isMenuOpen) {
+      menu.style.opacity = '1';
+      menu.style.transform = 'scale(1) translateY(0)';
+      menu.style.pointerEvents = 'all';
+    } else {
+      menu.style.opacity = '0';
+      menu.style.transform = 'scale(0.9) translateY(10px)';
+      menu.style.pointerEvents = 'none';
+    }
+  }
+
+  function handleOutsideClick(e) {
+    if (isMenuOpen && !e.target.closest(`#${BUTTON_ID}`) && !e.target.closest(`#${MENU_ID}`)) {
+      toggleFormatMenu();
+    }
+  }
+
   function fixGmailZIndexing() {
-    // Gmail uses high z-indexes that might hide our button
-    // This function adjusts them if needed
     const stylesheet = document.createElement('style');
     stylesheet.textContent = `
-      /* Ensure our button stays on top */
-      #${BUTTON_ID} {
-        z-index: 9999 !important;
-      }
-      
-      /* Adjust Gmail's fullscreen overlay if it conflicts */
-      .a8C {
-        z-index: 9998 !important;
-      }
+      #${BUTTON_ID} { z-index: 9999 !important; }
+      #${MENU_ID} { z-index: 9998 !important; }
+      .a8C { z-index: 9997 !important; }
     `;
     document.head.appendChild(stylesheet);
   }
 
-  // Sets up mutation observer on Gmail's container
   function setupDomObserver() {
-    const observer = new MutationObserver(() => {
-      // Check if email view has changed whenever DOM changes
-      checkEmailView();
-    });
-    
-    // Observe the whole Gmail app container
-    observer.observe(document.body, { 
-      childList: true, 
-      subtree: true
-    });
+    const observer = new MutationObserver(checkEmailView);
+    observer.observe(document.body, { childList: true, subtree: true });
   }
-  
-  // Checks if we're in email view and shows/hides button accordingly
+
   function checkEmailView() {
     const button = document.getElementById(BUTTON_ID);
     if (!button) return;
-    
-    // Check for email content and thread indicator
+
     const hasEmailContent = !!document.querySelector(SELECTORS.EMAIL_CONTENT);
     const hasEmailThreadIndicator = !!document.querySelector(SELECTORS.EMAIL_OPEN_INDICATOR);
-    
-    // Show button if we're in email view
+
     if (hasEmailContent || hasEmailThreadIndicator) {
       if (!isButtonVisible) {
         button.style.opacity = '1';
@@ -161,122 +208,122 @@
         isButtonVisible = true;
       }
     } else {
-      // Hide button if we're not in email view
       if (isButtonVisible) {
         button.style.opacity = '0';
         button.style.transform = 'scale(0.8)';
         isButtonVisible = false;
+        if (isMenuOpen) toggleFormatMenu();
       }
     }
-    
-    // Check if we need to adjust button position based on Gmail's layout
     adjustButtonPosition();
   }
-  
-  // Adjusts button position based on Gmail's current layout
+
   function adjustButtonPosition() {
     const button = document.getElementById(BUTTON_ID);
-    if (!button) return;
-    
-    // Check if right sidebar is present
+    const menu = document.getElementById(MENU_ID);
+    if (!button || !menu) return;
     const rightSidebar = document.querySelector(SELECTORS.GMAIL_RIGHT_SIDEBAR);
-    
+
     if (rightSidebar && window.getComputedStyle(rightSidebar).display !== 'none') {
-      // Move button to avoid sidebar
       button.style.right = '270px';
+      menu.style.right = '270px';
     } else {
-      // Default position
       button.style.right = '20px';
+      menu.style.right = '20px';
     }
   }
 
-  // Handles click event for export button
-  function handleExportClick() {
+  function handleExportClick(format = 'html') {
     try {
       const emailContent = processEmailContent();
-      const htmlDocument = createHTMLDocument(emailContent);
-      triggerDownload(htmlDocument);
+      if (format === 'html') {
+        const htmlDocument = createHTMLDocument(emailContent);
+        triggerDownload(htmlDocument, 'text/html', 'html');
+      } else {
+        convertToImage(emailContent, format);
+      }
     } catch (error) {
       handleExportError(error);
     }
   }
 
-  // Extracts and processes email content from DOM
   function processEmailContent() {
     const emailContainer = document.querySelector(SELECTORS.EMAIL_CONTENT);
     if (!emailContainer) throw new Error('Email content not found');
-
-    const cleanedContent = cleanEmailContent(emailContainer.cloneNode(true));
+    const contentClone = emailContainer.cloneNode(true);
     return {
-      content: cleanedContent.innerHTML,
+      content: contentClone,
       styles: captureInlineStyles(),
       subject: getEmailSubject()
     };
   }
 
-  // Removes unnecessary elements from email content
-  function cleanEmailContent(contentClone) {
-    const elementsToRemove = contentClone.querySelectorAll(
-      '.gmail_extra, .gmail_signature, .aeJ'
-    );
-    elementsToRemove.forEach(el => el.remove());
-    return contentClone;
-  }
-
-  // Captures all inline styles from the document
   function captureInlineStyles() {
     return Array.from(document.querySelectorAll('style'))
       .map(style => style.textContent)
       .join('\n');
   }
 
-  // Extracts email subject from the page
   function getEmailSubject() {
     const subjectElement = document.querySelector(SELECTORS.EMAIL_SUBJECT);
-    return subjectElement?.textContent.trim() || 'email-template';
+    return subjectElement?.textContent.trim().replace(/[^\w\s]/gi, '-').toLowerCase() || 'email-template';
   }
 
-  // Creates full HTML document structure
   function createHTMLDocument({ content, styles, subject }) {
-    const sanitizedSubject = subject
-      .replace(/[^a-z0-9]/gi, '-')
-      .toLowerCase();
-
     return `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>${sanitizedSubject}</title>
+        <title>${subject}</title>
         <style>
-          body { 
-            font-family: Arial, sans-serif; 
-            margin: 0; 
-            padding: 0px; 
-            overflow: scroll; 
-          }
-          .email-container { 
-            max-width: 600px; 
-            margin: 0 auto; 
-          }
+          body { font-family: Arial, sans-serif; margin: 0; padding: 0; overflow: scroll; }
+          .email-container { max-width: 600px; max-height: auto; margin: 0 auto; }
         </style>
       </head>
       <body>
-        <div class="email-container">
-          ${content}
-        </div>
+        <div class="email-container">${content.innerHTML}</div>
       </body>
       </html>
     `;
   }
 
-  // Triggers file download through Chrome API
-  function triggerDownload(htmlContent) {
-    const blob = new Blob([htmlContent], { type: 'text/html' });
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const filename = `${getEmailSubject()}-${timestamp}.html`;
+  function convertToImage({ content, subject }, format) {
+    const tempContainer = document.createElement('div');
+    Object.assign(tempContainer.style, {
+      position: 'fixed',
+      top: '-9999px',
+      left: '-9999px',
+      width: '600px',
+      backgroundColor: 'white',
+      zIndex: '-9999',
+      padding: '20px'
+    });
+    tempContainer.appendChild(content);
+    document.body.appendChild(tempContainer);
 
+    html2canvas(tempContainer, { useCORS: true, scale: 2 }).then(canvas => {
+      const mimeType = format === 'png' ? 'image/png' : 'image/jpeg';
+      const imageData = canvas.toDataURL(mimeType, 0.9);
+      const filename = `${subject}-${new Date().toISOString().replace(/[:.]/g, '-')}.${format}`;
+
+      chrome.runtime.sendMessage({
+        action: 'download',
+        url: imageData,
+        filename: filename
+      });
+
+      document.body.removeChild(tempContainer);
+    }).catch(error => {
+      document.body.removeChild(tempContainer);
+      handleExportError(error);
+    });
+  }
+
+  function triggerDownload(content, mimeType, extension) {
+    const blob = new Blob([content], { type: mimeType });
+    const filename = `${getEmailSubject()}-${new Date().toISOString().replace(/[:.]/g, '-')}.${extension}`;
     chrome.runtime.sendMessage({
       action: 'download',
       url: URL.createObjectURL(blob),
@@ -284,9 +331,8 @@
     });
   }
 
-  // Handles errors during export process
   function handleExportError(error) {
     console.error('Email export failed:', error);
-    alert('Failed to export email template. Please try again.');
+    alert(`Failed to export email: ${error.message || 'Unknown error'}`);
   }
 })();
