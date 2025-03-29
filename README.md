@@ -34,6 +34,9 @@ This extension requires the following permissions:
 - CSS
 - Chrome Extensions API
 
+## Privacy Policy  
+https://docs.google.com/document/d/1EORLGC43M5UPdn1uJq1HDlqq8Uw0WILv1r2X-ZlOd_Q/edit?usp=sharing  
+
 ## Contributing
 Contributions are welcome! Feel free to fork this repository and submit a pull request with improvements or new features.
 
