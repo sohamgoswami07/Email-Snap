@@ -3,7 +3,7 @@ The **Gmail Email Template Downloader** is a Chrome extension that allows users 
 
 ## Features
 - Extracts and downloads email templates from Gmail.
-- Saves templates in HTML format.
+- Saves templates in HTML, JPG and PNG format.
 - Simple and intuitive user interface.
 - Works directly within Gmail.
 
