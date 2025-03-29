@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "Gmail HTML Template Exporter",
-    "version": "1.0.1",
-    "description": "Save Gmail emails as HTML templates with one click",
+    "name": "Email Snap",
+    "version": "1.0.0",
+    "description": "Save email templates of Gmail with one click",
     "permissions": [
       "activeTab",
       "downloads"
