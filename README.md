@@ -10,7 +10,7 @@
 ## Installation
 1. Clone or download this repository.
    ```bash
-   git clone https://github.com/yourusername/gmail-template-downloader.git
+   git clone https://github.com/sohamgoswami07/Email-Snap.git
    ```
 2. Open **Google Chrome** and navigate to `chrome://extensions/`.
 3. Enable **Developer mode** (toggle at the top right corner).
