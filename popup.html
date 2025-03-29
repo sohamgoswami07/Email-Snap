@@ -1,31 +1,56 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Gmail HTML Template Exporter</title>
+  <title>Email Snap</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Radio+Canada:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet">
   <style>
+    .radio-canada {
+      font-family: "Radio Canada", sans-serif;
+      font-optical-sizing: auto;
+      font-style: normal;
+    }
     body {
-      width: 300px;
-      padding: 10px;
-      font-family: Arial, sans-serif;
+      width: 30rem;
+      height: auto;
+      padding: 0rem;
+      margin: 0rem;
+      font-size: 1rem;
+      font-family: "Radio Canada", sans-serif;
     }
     h2 {
-      margin-top: 0;
+      font-size: 1.5rem;
+      margin-left: 0.5rem;
+      color: #FFFFFF;
     }
-    .instructions {
-      font-size: 14px;
-      line-height: 1.4;
+    .header {
+      width: 100%;
+      height: 5rem;
+      background-color: #C37B2C;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .content {
+      width: 100%;
+      margin: 0.75rem;
     }
   </style>
 </head>
 <body>
-  <h2>Gmail HTML Template Exporter</h2>
-  <div class="instructions">
+  <div class="header">
+    <img src="images/icon48.png" alt="">
+    <h2>Email Snap</h2>
+  </div>
+  <div class="content">
     <p>To use this extension:</p>
-    <ol>
+    <ul>
       <li>Open an email in Gmail</li>
-      <li>Click the download icon in the toolbar (next to delete)</li>
-      <li>The HTML template will be automatically downloaded</li>
-    </ol>
+      <li>Click the download icon in the bottom right corner</li>
+      <li>Download the email in HTML, JPG & PNG format</li>
+    </ul>
   </div>
 </body>
 </html>
