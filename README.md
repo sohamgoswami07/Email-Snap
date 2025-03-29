@@ -1,5 +1,5 @@
 # Email-Snap (Chrome Extension)
-The **Gmail Email Template Downloader** is a Chrome extension that allows users to easily download email templates from Gmail. This tool is particularly useful for marketers, designers, and professionals who want to reuse or analyze email templates.
+**Email Snap** is a Chrome extension that allows users to easily download email templates from Gmail. This tool is particularly useful for marketers, designers, and professionals who want to reuse or analyze email templates.
 
 ## Features
 - Extracts and downloads email templates from Gmail.
